@@ -1,0 +1,14 @@
+# MacOS
+.DS_Store
+
+# PyCharm
+/.idea/
+
+# VSCode
+/.vscode/
+
+# Python
+/venv/
+__pycache/
+
+# Project
