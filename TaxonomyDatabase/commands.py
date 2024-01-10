@@ -5,9 +5,10 @@ def create_data(
     taxon: Literal["phylum", "class", "order", "family", "genus", "species"],
     values: list[str],
 ) -> str:
+    values_str = ", ".join(values)
     return f"""
 insert into "{taxon}"
-values (*{values});
+values ({values_str});
 """
 
 
@@ -18,10 +19,10 @@ def create_table_class_to_species(
     return f"""
 create table "{taxon}"
 (
-    chinese text NOT NULL,
-    scientific text NOT NULL,
+    chinese     text NOT NULL,
+    scientific  text NOT NULL,
     description text NOT NULL,
-    parent text NOT NULL,
+    parent      text NOT NULL,
     primary key (chinese),
     foreign key (parent) references "{parent_taxon}" (chinese)
 );
@@ -79,7 +80,7 @@ select *
 from "{taxon}"
 where chinese = (select parent
                  from "{child_taxon}"
-                 where chinese = '{child_chinese}')
+                 where chinese = '{child_chinese}');
 """
 
 
@@ -95,12 +96,12 @@ where chinese = '{chinese}';
 
 
 def retrieve_data_by_parent(
-    parent_taxon: Literal["phylum", "class", "order", "family", "genus", "species"],
+    taxon: Literal["phylum", "class", "order", "family", "genus", "species"],
     parent_chinese: str,
 ) -> str:
     return f"""
 select *
-from "{parent_taxon}"
+from "{taxon}"
 where parent = '{parent_chinese}';
 """
 
@@ -138,18 +139,14 @@ where chinese = '{chinese}';
 """
 
 
-COMMIT = "commit;"
-
 CREATE_TABLE_PHYLUM = """
 create table phylum
 (
-    chinese text NOT NULL,
-    scientific text NOT NULL,
+    chinese     text NOT NULL,
+    scientific  text NOT NULL,
     description text NOT NULL,
     primary key (chinese)
 );
 """
 
 INITIALIZE = "pragma foreign_keys = 1;"
-
-ROLLBACK = "rollback;"

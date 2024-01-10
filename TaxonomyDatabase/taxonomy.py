@@ -8,7 +8,7 @@ import sqlite3
 from pathlib import Path
 from typing import Literal, Union
 
-import commands
+from . import commands
 
 
 class Taxonomy:
@@ -33,7 +33,7 @@ class Taxonomy:
         self._connect.close()
 
     def commit(self) -> None:
-        self._execute(commands.COMMIT)
+        self._connect.commit()
 
     def create_data(
         self,
@@ -63,20 +63,7 @@ class Taxonomy:
         self,
         child_taxon: Literal["class", "order", "family", "genus", "species"],
         child_chinese: str,
-    ) -> tuple[str]:
-        idx = self._taxa.index[child_taxon]
-        taxon = self._taxa[idx - 1]
-        self._execute(
-            commands.retrieve_data_by_child(taxon, child_taxon, child_chinese)
-        )
-
-        return self._fetchone()
-
-    def retrieve_data_by_child(
-        self,
-        child_taxon: Literal["class", "order", "family", "genus", "species"],
-        child_chinese: str,
-    ) -> tuple[str]:
+    ) -> tuple:
         idx = self._taxa.index(child_taxon)
         taxon = self._taxa[idx - 1]
         self._execute(
@@ -89,29 +76,29 @@ class Taxonomy:
         self,
         taxon: Literal["phylum", "class", "order", "family", "genus", "species"],
         chinese: str,
-    ) -> tuple[str]:
+    ) -> tuple:
         self._execute(commands.retrieve_data_by_chinese(taxon, chinese))
 
         return self._fetchone()
 
     def retrieve_data_by_parent(
         self,
-        parent_taxon: Literal["phylum", "class", "order", "family", "genus", "species"],
+        taxon: Literal["phylum", "class", "order", "family", "genus", "species"],
         parent_chinese: Union[str, None],
-    ) -> list[tuple[str]]:
+    ) -> list[tuple]:
         # 门
-        if parent_taxon == "phylum":
+        if taxon == "phylum":
             return self.retrieve_data_by_taxon("phylum")
 
         # 纲目科属种
-        self._execute(commands.retrieve_data_by_parent(parent_taxon, parent_chinese))
+        self._execute(commands.retrieve_data_by_parent(taxon, parent_chinese))
 
         return self._fetchall()
 
     def retrieve_data_by_taxon(
         self,
         taxon: Literal["phylum", "class", "order", "family", "genus", "species"],
-    ) -> list[tuple[str]]:
+    ) -> list[tuple]:
         self._execute(commands.retrieve_data_by_taxon(taxon))
 
         return self._fetchall()
@@ -122,7 +109,7 @@ class Taxonomy:
         child_chinese: str,
         return_child: bool = False,
         names_only: bool = False,
-    ) -> list[tuple[str]]:
+    ) -> list[tuple]:
         parents = []
         if return_child:
             item = self.retrieve_data_by_chinese(child_taxon, child_chinese)
@@ -132,9 +119,6 @@ class Taxonomy:
         while idx != 0:
             parent = self.retrieve_data_by_child(child_taxon, child_chinese)
 
-            if parent is None:
-                return []
-
             parents.insert(0, parent)
             idx -= 1
             child_taxon = self._taxa[idx]
@@ -143,13 +127,13 @@ class Taxonomy:
         if names_only:
             names = []
             for item in parents:
-                names.append[item[:2]]
+                names.append(item[:2])
             return names
         else:
             return parents
 
     def rollback(self) -> None:
-        self._execute(commands.ROLLBACK)
+        self._connect.rollback()
 
     def update_chinese(
         self,
@@ -185,8 +169,8 @@ class Taxonomy:
     def _execute(self, sql: str) -> None:
         self._cursor.execute(sql)
 
-    def _fetchall(self) -> list[tuple[str]]:
+    def _fetchall(self) -> list[tuple]:
         return self._cursor.fetchall()
 
-    def _fetchone(self) -> tuple[str]:
+    def _fetchone(self) -> tuple:
         return self._cursor.fetchone()
