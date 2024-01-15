@@ -1,15 +1,15 @@
+# Database
+*.db
+
 # MacOS
 .DS_Store
+
+# Python
+/venv/
+__pycache/
 
 # PyCharm
 /.idea/
 
 # VSCode
 /.vscode/
-
-# Python
-/venv/
-__pycache/
-
-# Project
-/databases/*.db

@@ -1,0 +1,38 @@
+site_name: TaxonomyDatabase
+
+nav:
+  - 项目介绍: index.md
+  - 数据库管理: api.md
+
+theme:
+  name: material
+  features:
+    - navigation.footer
+    - navigation.tabs
+    - navigation.top
+
+plugins:
+  - search:
+      lang:
+        - en
+        - zh
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [ . ]
+          options:
+            show_source: false
+            members_order: source
+            docstring_style: google
+            docstring_section_style: spacy
+            show_docstring_examples: true
+            show_signature: false
+
+markdown_extensions:
+  - admonition
+  - pymdownx.highlight:
+      use_pygments: true
+      linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
