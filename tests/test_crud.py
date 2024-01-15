@@ -1,8 +1,7 @@
 from pathlib import Path
 
 import pytest
-from TaxonomyDatabase import Taxonomy
-
+from taxonomy import Taxonomy
 
 filename = Path("../databases/test.db")
 taxa = ("phylum", "class", "order", "family", "genus", "species")
