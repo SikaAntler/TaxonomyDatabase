@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "taxonomy"
+requires-python = ">=3.10"
+authors = [{ name = "Tiahong Liang", email = "lngtnhng97@gmail.com" }]
+description = "A Python wrapper for taxonomy based on SQLite3."
+readme = "README.md"
+license = { file = "LICENSE" }
+dynamic = ["version"]
+
+[tool.setuptools.dynamic]
+version = { attr = "taxonomy.__version__" }
